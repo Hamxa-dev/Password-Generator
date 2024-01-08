@@ -1,18 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 function App() {
+  const [copy, setCopied] = useState(false);
   const [password, setPassword] = useState("");
   const [length, setLength] = useState(8);
-  const [symbol, setSymbol] = useState(false);
-  const [number, setNumber] = useState(false);
-  const [lowerCase, setLowerCase] = useState(false);
-  const [upperCase, setUpperCase] = useState(false);
+  const [symbol, setSymbol] = useState(true);
+  const [number, setNumber] = useState(true);
+  const [lowerCase, setLowerCase] = useState(true);
+  const [upperCase, setUpperCase] = useState(true);
 
   function generatePassword() {
     let pass = "";
-    let str = "ABCDEFGHIJKLMNOPQRSTUVWXZabcdefghijklmnopqrstuvwxyz";
+    let str = "";
     if (number) {
       str += "0123456789";
+    }
+
+    if (lowerCase) {
+      str += "abcdefghijklmnopqrstuvwxyz";
+    }
+    if (upperCase) {
+      str += "ABCDEFGHIJKLMNOPQRSTUVWXZ";
     }
     if (symbol) {
       str += "!@#$%^&*()_+~`|}{[]:;?><,./-=";
@@ -24,6 +33,10 @@ function App() {
     }
     setPassword(pass);
   }
+
+  useEffect(() => {
+    generatePassword();
+  }, [number, symbol, lowerCase, upperCase, length]);
 
   function includeNumber(e) {
     setNumber(e.target.checked);
@@ -41,21 +54,24 @@ function App() {
   return (
     <>
       <form className="border-2 bg-[#00000086] rounded-3xl  w-[70%] h-[550px] ml-[15%] mt-[3%]">
-        <h1 className="text-5xl font-bold text-center mt-[10%]  max-[960px]:text-4xl">
+        <h1 className="text-5xl font-bold text-center mt-[7%]  max-[960px]:text-4xl">
           Password Generator
         </h1>
-           <button
+
+        <div className=" ">
+          <h1 className="w-[50%]  max-[960px]:text-sm   h-10 text-3xl text-center mt-[3%] mx-[25%] rounded-md break-words bg-[#b2b0b06c] whitespace-wrap max-[960px]:pt-3">
+            {password}
+            <CopyToClipboard text={password} onCopy={() => setCopied(true)}>
+              <i className="fa-regular fa-copy ml-[7%] hover:text-green-800"></i>
+            </CopyToClipboard>
+          </h1>
+          <button
             type="button"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-full ml-[25%] mt-5"
             onClick={generatePassword}
           >
-            Generate Password
+            Refresh
           </button>
-        <div className=" ">
-          <h1 className="w-[50%]  max-[960px]:text-sm   h-10 text-3xl text-center mt-[3%] mx-[25%] rounded-md break-words bg-[#b2b0b06c] whitespace-wrap max-[960px]:pt-3">
-            {password}
-            <i className="fa-regular fa-copy ml-[7%]"></i>
-          </h1>
           <h2 className="font-bold ml-[25%] mt-9">Password Length</h2>
           <label htmlFor="length" className="ml-[25%] font-bold">
             {length}
@@ -116,5 +132,4 @@ function App() {
   );
 }
 
-
-  export default App
+export default App;
